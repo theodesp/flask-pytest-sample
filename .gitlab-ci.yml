@@ -7,10 +7,10 @@ default:
 stages:
     - test
 test:
-    script:
-        - pytest --cov=. --cov-report xml:coverage.xml test_hello.py
-        - coverage xml
-    artifacts:
-      when: always
-      reports:
-        cobertura: coverage.xml
+  script:
+    - pip install pytest pytest-cov
+    - pytest --cov=. test_hello.py
+    - coverage xml
+  artifacts:
+    reports:
+      cobertura: coverage.xml
