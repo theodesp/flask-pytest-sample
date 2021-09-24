@@ -8,8 +8,10 @@ stages:
   - test
 test:
   script:
-    - pytest --cov=. test_hello.py
+    - pytest --junitxml=report.xml --cov=. test_hello.py
     - coverage xml
   artifacts:
+    when: always
     reports:
+      junit: report.xml
       cobertura: coverage.xml
