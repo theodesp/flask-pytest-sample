@@ -6,16 +6,12 @@ default:
        - pip install -r requirements.txt
 stages:
     - test
-    - dummy
 test:
     script:
-        - pytest --junitxml=report.xml --cov=. test_hello.py
+        - pytest --junitxml=report.xml --cov=. --cov-report xml:coverage.xml test_hello.py
         - coverage xml
     artifacts:
       when: always
       reports:
         junit: report.xml
         cobertura: coverage.xml
-dummy:
-    script:
-        - echo "Pipeline finished"
