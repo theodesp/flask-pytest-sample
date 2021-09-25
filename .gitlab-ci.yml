@@ -1,5 +1,5 @@
 variables:
-  SERVICE_NAME: "flaskPytestGitlabCD"
+  SERVICE_NAME: "flaskpytestgitlabcd"
 default:
   image: python:3.9-slim-bullseye
   before_script:
