@@ -12,4 +12,4 @@ def test_hello():
     data = json.loads(response.get_data(as_text=True))
 
     assert response.status_code == 200
-    assert data['message'] == 'hello'
+    assert data['message'] == 'hellow'
