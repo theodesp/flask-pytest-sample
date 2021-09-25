@@ -22,6 +22,7 @@ test:
 
 deploy:
   stage: deploy
+  needs: test
   only:
     - main # This pipeline stage will run on this branch alone
   image: google/cloud-sdk
