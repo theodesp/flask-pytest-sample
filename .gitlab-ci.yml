@@ -40,5 +40,6 @@ deploy:
 notify:
   stage: notify
   needs: [deploy]
+    - main # This pipeline stage will run on this branch alone
   script:
     - echo "We are done"
