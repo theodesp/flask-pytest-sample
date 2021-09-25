@@ -9,6 +9,6 @@ RUN .venv/bin/pip install --no-cache-dir -r requirements.txt
 FROM python:3.7-alpine
 WORKDIR /app
 COPY --from=builder /app /app
-COPY app.py routes.py .
+COPY app.py routes.py ./
 ENV PATH="/app/.venv/bin:$PATH"
 CMD ["python", "app.py"]
