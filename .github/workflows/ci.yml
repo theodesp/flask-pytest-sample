@@ -58,5 +58,5 @@ jobs:
           gcloud auth configure-docker -q
 
       - name: 'Push image to Google Container Registry'
-        run: |-
+        run: |
           docker push gcr.io/stoikman-198318/${{ env.SERVICE_NAME }}-slim:latest
