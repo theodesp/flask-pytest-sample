@@ -1,13 +1,18 @@
 variables:
   SERVICE_NAME: "flaskpytestgitlabcd"
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_TLS_VERIFY: 1
+  DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+
+
 default:
-  image: python:3.9-slim-bullseye
+  image: python:3.9
   before_script:
-      - apt-get update
-      - apt-get install -y python3-pip
-      - pip install -r requirements.txt
+    - apt-get update
+    - apt-get install -y python3-pip
+    - pip install -r requirements.txt
 stages:
-  - test
   - deploy 
   - notify
 
@@ -23,19 +28,25 @@ test:
 
 deploy:
   stage: deploy
-  needs: [test]
   only:
     - main # This pipeline stage will run on this branch alone
   image: google/cloud-sdk
   services:
     - docker:dind
   script:
+    - set -eo pipefail
+    - wget https://downloads.dockerslim.com/releases/1.37.3/dist_linux.tar.gz
+    - tar zxvf dist_linux.tar.gz
+    - chmod +x ./dist_linux/docker-slim
     - echo $GCP_SERVICE_KEY > gcloud-service-key.json # Save Google cloud contents in a temporary json file
     - gcloud auth activate-service-account --key-file gcloud-service-key.json # Activate your service account
     - gcloud auth configure-docker # Configure docker environment
     - gcloud config set project $GCP_PROJECT_ID #Set the GCP Project ID to the variable name
-    - gcloud builds submit --tag gcr.io/$GCP_PROJECT_ID/$SERVICE_NAME #Run the gcloud build command to build our image
-    - gcloud run deploy $SERVICE_NAME --image gcr.io/$GCP_PROJECT_ID/$SERVICE_NAME --region=us-east4 --platform managed --allow-unauthenticated # Run the gcloud run deploy command to deploy our new service
+    - docker build -t "$SERVICE_NAME:$CI_COMMIT_REF_SLUG" . #Build the image
+    - ./dist_linux/docker-slim build --tag gcr.io/$GCP_PROJECT_ID/$SERVICE_NAME-slim "$SERVICE_NAME:$CI_COMMIT_REF_SLUG" #Build the minified image
+    - docker push gcr.io/$GCP_PROJECT_ID/$SERVICE_NAME-slim
+    - docker push gcr.io/$GCP_PROJECT_ID/$SERVICE_NAME
+    - gcloud run deploy $SERVICE_NAME --image gcr.io/$GCP_PROJECT_ID/$SERVICE_NAME-slim --region=europe-west1 --platform managed --allow-unauthenticated # Run the gcloud run deploy command to deploy our new service
 
 notify:
   stage: notify

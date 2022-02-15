@@ -11,4 +11,5 @@ WORKDIR /app
 COPY --from=builder /app /app
 COPY app.py routes.py ./
 ENV PATH="/app/.venv/bin:$PATH"
+EXPOSE 8080
 CMD ["python", "app.py"]
