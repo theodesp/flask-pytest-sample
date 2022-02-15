@@ -27,10 +27,6 @@ jobs:
           load: true
           tags: ${{ env.SERVICE_NAME }}:latest
 
-      - name: Inspect
-        run: |
-          docker image inspect ${{ env.SERVICE_NAME }}:latest
-
       - name: Minify
         run: |
           wget https://downloads.dockerslim.com/releases/1.37.3/dist_linux.tar.gz
@@ -38,7 +34,7 @@ jobs:
           chmod +x ./dist_linux/docker-slim
           ./dist_linux/docker-slim build --tag gcr.io/stoikman-198318/${{ env.SERVICE_NAME }}-slim:latest "${{ env.SERVICE_NAME }}:latest"
 
-      - name: Inspect2
+      - name: Inspect
         run: |
           docker image inspect gcr.io/stoikman-198318/${{ env.SERVICE_NAME }}-slim:latest
 
@@ -52,9 +48,9 @@ jobs:
 
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
-#
-#      - name: 'Set docker registry to gcloud'
-#      - run: 'gcloud auth configure-docker -q'
-#
-#      - name: 'Push image to Google Container Registry'
-#        run: 'docker push gcr.io/stoikman-198318/${{ env.SERVICE_NAME }}-slim:latest'
+
+      - name: 'Set docker registry to gcloud'
+        run: 'gcloud auth configure-docker -q'
+
+      - name: 'Push image to Google Container Registry'
+        run: 'docker push gcr.io/stoikman-198318/${{ env.SERVICE_NAME }}-slim:latest'
