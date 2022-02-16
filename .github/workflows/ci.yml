@@ -28,6 +28,17 @@ jobs:
           load: true
           tags: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest
 
+      - name: Minify
+        run: |
+            wget https://downloads.dockerslim.com/releases/1.37.3/dist_linux.tar.gz
+            tar zxvf dist_linux.tar.gz
+            chmod +x ./dist_linux/docker-slim
+            ./dist_linux/docker-slim build --tag gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}-slim:latest "gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest"
+
+      - name: Inspect
+        run: |
+            docker image inspect gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}-slim:latest
+
       - id: 'auth'
         uses: 'google-github-actions/auth@v0'
         with:
@@ -43,13 +54,13 @@ jobs:
         run: 'gcloud auth configure-docker -q'
 
       - name: 'Push image to Google Container Registry'
-        run: 'docker push gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest'
+        run: 'docker push gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}-slim:latest'
 
       - name: 'Deploy to Google Cloud Run'
         run: |-
           gcloud run deploy "${{ env.SERVICE_NAME }}" \
                       --quiet \
-                      --image "gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest" \
+                      --image "gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}-slim:latest" \
                       --region "$RUN_REGION" \
                       --platform "managed" \
                       --allow-unauthenticated \
