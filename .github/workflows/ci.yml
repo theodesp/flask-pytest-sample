@@ -37,6 +37,7 @@ jobs:
           path: ./dist_linux/
           key: ${{ runner.OS }}-dockerslim-cache-${{ hashFiles('docker-slim') }}
           restore-keys: |
+              ${{ runner.OS }}-dockerslim-cache-${{ hashFiles('docker-slim') }}
               ${{ runner.OS }}-dockerslim-cache-
 
       - name: Download DockerSlim
