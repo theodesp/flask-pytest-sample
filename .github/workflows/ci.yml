@@ -30,12 +30,24 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Minify
+      - name: Cache dockerslim
+        id: cache-dockerslim
+        uses: actions/cache@v2
+        with:
+          path: ./dist_linux/
+          key: ${{ runner.OS }}-dockerslim-cache-${{ hashFiles('**/docker-slim*') }}
+          restore-keys: |
+              ${{ runner.OS }}-dockerslim-cache-
+
+      - name: Download DockerSlim
+        if: steps.cache-dockerslim.outputs.cache-hit != 'true'
         run: |
             wget https://downloads.dockerslim.com/releases/1.37.3/dist_linux.tar.gz
             tar zxvf dist_linux.tar.gz
             chmod +x ./dist_linux/docker-slim
-            ./dist_linux/docker-slim build --tag gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}-slim:latest "gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest"
+      - name: Minify
+        run: |
+          ./dist_linux/docker-slim build --tag gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}-slim:latest "gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest"
 
       - name: Inspect
         run: |
