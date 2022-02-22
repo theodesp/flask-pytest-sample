@@ -35,7 +35,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./dist_linux/
-          key: ${{ runner.OS }}-dockerslim-cache-${{ hashFiles('**/docker-slim*') }}
+          key: ${{ runner.OS }}-dockerslim-cache-${{ hashFiles('docker-slim') }}
           restore-keys: |
               ${{ runner.OS }}-dockerslim-cache-
 
